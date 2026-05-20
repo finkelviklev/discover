@@ -55,7 +55,7 @@
     .screen.form-screen {
       align-items: flex-start;
       padding-top: 72px;
-      padding-bottom: 80px;
+      padding-bottom: 140px;
     }
     .container {
       max-width: 780px;
@@ -322,13 +322,21 @@
     }
 
     .form-nav {
-      margin-top: 56px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 16px;
-      padding-top: 36px;
+      padding: 18px 8vw;
+      background: rgba(245, 243, 238, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-top: 1px solid var(--rule);
+      z-index: 10;
+      margin: 0;
     }
 
     .review-stats {
@@ -357,12 +365,13 @@
 
     @media (max-width: 640px) {
       .screen { padding: 60px 24px; }
-      .screen.form-screen { padding-top: 64px; padding-bottom: 80px; }
+      .screen.form-screen { padding-top: 64px; padding-bottom: 130px; }
       .section-header { margin-bottom: 40px; }
       .block { margin-bottom: 40px; }
       .field { margin-bottom: 24px; }
-      .form-nav { flex-direction: column-reverse; align-items: stretch; }
-      .form-nav .cta { width: 100%; justify-content: center; }
+      .form-nav { padding: 12px 20px; gap: 10px; }
+      .form-nav .cta { padding: 14px 18px; font-size: 14px; flex: 1; justify-content: center; }
+      .form-nav .cta-secondary { flex: 0 0 auto; }
       .cta-row { margin-top: 36px; gap: 18px; }
       .meta { font-size: 12px; }
       .review-stats { gap: 28px; }
@@ -1545,6 +1554,20 @@
         else if (n <= 1) showScreen('lobby');
         else showScreen('section-' + (n - 1));
       });
+    });
+
+
+    document.addEventListener('keydown', function (e) {
+      var tag = e.target && e.target.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+      if (e.key === 'ArrowRight') {
+        var next = document.querySelector('.screen.active [data-action="next"]');
+        if (next) { e.preventDefault(); next.click(); }
+      } else if (e.key === 'ArrowLeft') {
+        var back = document.querySelector('.screen.active [data-action="back"]');
+        if (back) { e.preventDefault(); back.click(); }
+      }
     });
 
     restoreInputs();

@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Discovery Questionnaire · Galgal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f3ee;
+      --ink: #1a1a1a;
+      --ink-soft: #4a4a4a;
+      --ink-faint: #8a8a8a;
+      --rule: rgba(0, 0, 0, 0.12);
+      --rule-soft: rgba(0, 0, 0, 0.06);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 17px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--rule-soft);
+      z-index: 20;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--ink);
+      width: 0;
+      transition: width 0.45s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    .screen {
+      display: none;
+      min-height: 100vh;
+      padding: 80px 8vw;
+      position: relative;
+    }
+    .screen.active { display: flex; }
+    .screen.lobby { align-items: center; }
+    .screen.form-screen {
+      align-items: flex-start;
+      padding-top: 72px;
+      padding-bottom: 80px;
+    }
+    .container {
+      max-width: 780px;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+      margin: 0 auto;
+    }
+
+    .bg-illustration {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .bg-illustration::before {
+      content: '';
+      position: absolute;
+      width: 540px;
+      height: 540px;
+      right: -120px;
+      bottom: -120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212, 184, 150, 0.45), rgba(212, 184, 150, 0) 70%);
+      filter: blur(20px);
+      will-change: transform, opacity;
+      animation: drift-warm 14s ease-in-out infinite alternate;
+    }
+    .bg-illustration::after {
+      content: '';
+      position: absolute;
+      width: 380px;
+      height: 380px;
+      left: -80px;
+      top: 10%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(180, 170, 200, 0.32), rgba(180, 170, 200, 0) 70%);
+      filter: blur(24px);
+      will-change: transform, opacity;
+      animation: drift-cool 18s ease-in-out infinite alternate;
+    }
+    @keyframes drift-warm {
+      0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+      25%  { transform: translate(-140px, -90px) scale(1.15); opacity: 0.6; }
+      50%  { transform: translate(80px, -160px) scale(0.85); opacity: 1; }
+      75%  { transform: translate(160px, 70px) scale(1.1); opacity: 0.7; }
+      100% { transform: translate(-60px, 110px) scale(0.95); opacity: 1; }
+    }
+    @keyframes drift-cool {
+      0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+      30%  { transform: translate(130px, 90px) scale(0.8); opacity: 0.5; }
+      60%  { transform: translate(-90px, 140px) scale(1.2); opacity: 1; }
+      100% { transform: translate(-130px, -90px) scale(1.05); opacity: 0.7; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .bg-illustration::before,
+      .bg-illustration::after { animation: none; }
+    }
+
+    .greeting {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: clamp(48px, 7vw, 88px);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      margin-bottom: 40px;
+    }
+    .body-text p {
+      font-size: clamp(17px, 1.4vw, 19px);
+      line-height: 1.6;
+      color: var(--ink);
+      margin-bottom: 20px;
+      max-width: 620px;
+    }
+
+    .section-header { margin-bottom: 48px; }
+    @media (max-width: 640px) {
+    }
+    .section-number {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 24px;
+    }
+    .section-title {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: clamp(40px, 5.5vw, 64px);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+    }
+    .section-title em { font-style: italic; }
+    .section-intro {
+      font-size: 17px;
+      color: var(--ink-soft);
+      max-width: 540px;
+    }
+
+    .block { margin-bottom: 48px; }
+    .block-title {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(24px, 2.6vw, 30px);
+      color: var(--ink);
+      margin-bottom: 24px;
+    }
+
+    .field { margin-bottom: 28px; }
+    .field-number {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      color: var(--ink-faint);
+      margin-bottom: 10px;
+    }
+    .field-label {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.4;
+      margin-bottom: 2px;
+    }
+    .field-helper {
+      display: block;
+      font-size: 13px;
+      color: var(--ink-faint);
+      font-style: italic;
+      margin-bottom: 10px;
+      max-width: 540px;
+    }
+
+    .field input[type="text"],
+    .field input[type="email"] {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid var(--rule);
+      padding: 16px 18px;
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 17px;
+      color: var(--ink);
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .field input[type="text"]:focus,
+    .field input[type="email"]:focus {
+      outline: none;
+      border-color: var(--ink);
+      background: rgba(255, 255, 255, 0.9);
+    }
+    .field input::placeholder,
+    .field textarea::placeholder {
+      color: var(--ink-faint);
+      opacity: 0.65;
+    }
+    .field textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid var(--rule);
+      padding: 16px 18px;
+      min-height: 120px;
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--ink);
+      resize: vertical;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .field textarea.large { min-height: 200px; }
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--ink);
+      background: rgba(255, 255, 255, 0.9);
+    }
+    .field-label + input,
+    .field-label + textarea { margin-top: 10px; }
+
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .option {
+      display: inline-flex;
+      align-items: center;
+      padding: 12px 22px;
+      border: 1px solid var(--rule);
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--ink);
+      transition: all 0.15s ease;
+      background: transparent;
+      user-select: none;
+    }
+    .option:hover { border-color: var(--ink); }
+    .option input { position: absolute; opacity: 0; pointer-events: none; }
+    .option:has(input:checked) {
+      background: var(--ink);
+      color: var(--bg);
+      border-color: var(--ink);
+    }
+
+    .cta-row {
+      margin-top: 48px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 32px;
+      background: var(--ink);
+      color: var(--bg);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .cta:hover { transform: translateX(4px); background: #000; }
+    .cta-arrow {
+      font-family: 'Instrument Serif', serif;
+      font-size: 20px;
+      line-height: 1;
+    }
+    .cta-secondary {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--rule);
+    }
+    .cta-secondary:hover {
+      background: transparent;
+      border-color: var(--ink);
+      transform: translateX(-4px);
+    }
+    .cta-secondary .cta-arrow {
+      transform: rotate(180deg);
+      display: inline-block;
+    }
+    .meta {
+      font-size: 13px;
+      color: var(--ink-soft);
+      letter-spacing: 0.02em;
+    }
+
+    .form-nav {
+      margin-top: 56px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding-top: 36px;
+      border-top: 1px solid var(--rule);
+    }
+
+    .review-stats {
+      display: flex;
+      gap: 40px;
+      margin: 32px 0 48px;
+      flex-wrap: wrap;
+    }
+    .stat {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .stat-value {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 44px;
+      line-height: 1;
+      font-weight: 400;
+    }
+    .stat-label {
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+
+    @media (max-width: 640px) {
+      .screen { padding: 60px 24px; }
+      .screen.form-screen { padding-top: 64px; padding-bottom: 80px; }
+      .section-header { margin-bottom: 40px; }
+      .block { margin-bottom: 40px; }
+      .field { margin-bottom: 24px; }
+      .form-nav { flex-direction: column-reverse; align-items: stretch; }
+      .form-nav .cta { width: 100%; justify-content: center; }
+      .cta-row { margin-top: 36px; gap: 18px; }
+      .meta { font-size: 12px; }
+      .review-stats { gap: 28px; }
+      .stat-value { font-size: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><div class="progress-fill"></div></div>
+
+  <main>
+    <!-- LOBBY -->
+    <section class="screen lobby" id="lobby" data-section="0">
+      <div class="bg-illustration" aria-hidden="true"></div>
+      <div class="container">
+        <h1 class="greeting">Hi <span id="greeting-name">Alana</span>,</h1>
+        <div class="body-text">
+          <p>To better understand your idea, your users, your goals, and what success looks like for you, I've put together a short discovery questionnaire.</p>
+          <p>It takes about 30 minutes. By the end, we'll have a clear shared picture of the project, and you'll get back a structured doc that becomes the foundation of everything we build together.</p>
+          <p>Don't worry if you don't have every answer yet. The unknowns are useful too. We'll work through them together in the next step.</p>
+          <p>Take your time. There are no wrong answers.</p>
+        </div>
+        <div class="cta-row">
+          <button class="cta" id="begin-btn" type="button">
+            Let's begin
+            <span class="cta-arrow">&rarr;</span>
+          </button>
+          <span class="meta">14 sections, about 30 minutes, your progress saves automatically</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1 -->
+    <section class="screen form-screen" id="section-1" data-section="1">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">01 / 14</span>
+          <h2 class="section-title">About you<br /><em>and the venture</em></h2>
+          <p class="section-intro">A bit of context before we get into the product itself.</p>
+        </header>
+
+        <div class="block">
+          <h3 class="block-title">Contact</h3>
+
+          <div class="field">
+            <span class="field-number">01</span>
+            <label class="field-label" for="q_full_name">Your full name</label>
+            <input type="text" id="q_full_name" name="q_full_name" autocomplete="name" placeholder="Type your answer" />
+          </div>
+
+          <div class="field">
+            <span class="field-number">02</span>
+            <label class="field-label" for="q_role">Your role or title</label>
+            <span class="field-helper">Founder, co-founder, CEO, product lead, etc.</span>
+            <input type="text" id="q_role" name="q_role" placeholder="Type your answer" />
+          </div>
+
+          <div class="field">
+            <span class="field-number">03</span>
+            <label class="field-label" for="q_email">Email</label>
+            <input type="email" id="q_email" name="q_email" autocomplete="email" placeholder="Type your answer" />
+          </div>
+
+          <div class="field">
+            <span class="field-number">04</span>
+            <label class="field-label" for="q_location">Country and city</label>
+            <span class="field-helper">So I know your timezone.</span>
+            <input type="text" id="q_location" name="q_location" placeholder="Type your answer" />
+          </div>
+        </div>
+
+        <div class="block">
+          <h3 class="block-title">The venture</h3>
+
+          <div class="field">
+            <span class="field-number">05</span>
+            <label class="field-label" for="q_venture_name">Working name of the company or product</label>
+            <input type="text" id="q_venture_name" name="q_venture_name" placeholder="Type your answer" />
+          </div>
+
+          <div class="field">
+            <span class="field-number">06</span>
+            <span class="field-label">What stage is the venture at?</span>
+            <span class="field-helper">Pick the one closest to where you are today.</span>
+            <div class="options" role="radiogroup" aria-label="Stage">
+              <label class="option"><input type="radio" name="q_stage" value="idea" /> Just an idea</label>
+              <label class="option"><input type="radio" name="q_stage" value="exploring" /> Early concept, still exploring</label>
+              <label class="option"><input type="radio" name="q_stage" value="ready-to-build" /> Validated idea, ready to build</label>
+              <label class="option"><input type="radio" name="q_stage" value="prototype" /> Prototype or MVP already exists</label>
+              <label class="option"><input type="radio" name="q_stage" value="launched" /> Launched, iterating</label>
+              <label class="option"><input type="radio" name="q_stage" value="scaling" /> Scaling</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field-number">07</span>
+            <span class="field-label">Are you working on this</span>
+            <div class="options" role="radiogroup" aria-label="Team structure">
+              <label class="option"><input type="radio" name="q_team_structure" value="solo" /> Solo</label>
+              <label class="option"><input type="radio" name="q_team_structure" value="cofounder" /> With a co-founder or partner</label>
+              <label class="option"><input type="radio" name="q_team_structure" value="small-team" /> With a small team</label>
+              <label class="option"><input type="radio" name="q_team_structure" value="company" /> As part of a larger company</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2 -->
+    <section class="screen form-screen" id="section-2" data-section="2">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">02 / 14</span>
+          <h2 class="section-title">Vision<br /><em>and problem</em></h2>
+          <p class="section-intro">Now the heart of it. What you're building, and why.</p>
+        </header>
+
+        <div class="block">
+          <h3 class="block-title">The problem</h3>
+
+          <div class="field">
+            <span class="field-number">08</span>
+            <label class="field-label" for="q_problem">What problem are you trying to solve?</label>
+            <span class="field-helper">In your own words. Don't worry about being pitch-perfect.</span>
+            <textarea id="q_problem" name="q_problem" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">09</span>
+            <label class="field-label" for="q_problem_workaround">Who has this problem, and how do they handle it today?</label>
+            <span class="field-helper">What do they do in the absence of your product?</span>
+            <textarea id="q_problem_workaround" name="q_problem_workaround" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">10</span>
+            <label class="field-label" for="q_problem_matters">Why does this problem matter?</label>
+            <span class="field-helper">What's the cost of leaving it unsolved? Where does it show up in people's lives?</span>
+            <textarea id="q_problem_matters" name="q_problem_matters" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3 class="block-title">The vision</h3>
+
+          <div class="field">
+            <span class="field-number">11</span>
+            <label class="field-label" for="q_why_now">Why now?</label>
+            <span class="field-helper">What has changed in the world, the market, technology, or culture that makes this the right moment?</span>
+            <textarea id="q_why_now" name="q_why_now" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">12</span>
+            <label class="field-label" for="q_long_term_success">What does success look like in the long run?</label>
+            <span class="field-helper">Imagine the product is widely used and loved. What's different about the world?</span>
+            <textarea id="q_long_term_success" name="q_long_term_success" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">13</span>
+            <label class="field-label" for="q_inspiration">What inspired this idea?</label>
+            <span class="field-helper">A personal experience, an observation, a conversation, something you noticed?</span>
+            <textarea id="q_inspiration" name="q_inspiration" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3 -->
+    <section class="screen form-screen" id="section-3" data-section="3">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">03 / 14</span>
+          <h2 class="section-title">Users<br /><em>and audience</em></h2>
+          <p class="section-intro">Who you're building for, and how well you know them.</p>
+        </header>
+
+        <div class="block">
+          <h3 class="block-title">Who it's for</h3>
+
+          <div class="field">
+            <span class="field-number">14</span>
+            <label class="field-label" for="q_primary_user">Describe your primary user</label>
+            <span class="field-helper">Who are they, what's their life like, what do they care about?</span>
+            <textarea id="q_primary_user" name="q_primary_user" rows="5" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">15</span>
+            <label class="field-label" for="q_secondary_user">Is there a secondary or adjacent audience?</label>
+            <span class="field-helper">Optional. People who would also use it, or who might be served later.</span>
+            <textarea id="q_secondary_user" name="q_secondary_user" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">16</span>
+            <span class="field-label">How well do you know these users today?</span>
+            <div class="options" role="radiogroup" aria-label="User knowledge">
+              <label class="option"><input type="radio" name="q_user_knowledge" value="am-one" /> I am one of them</label>
+              <label class="option"><input type="radio" name="q_user_knowledge" value="many-convos" /> I have talked to many of them</label>
+              <label class="option"><input type="radio" name="q_user_knowledge" value="few-convos" /> I have talked to a few</label>
+              <label class="option"><input type="radio" name="q_user_knowledge" value="observations" /> Observations but no direct conversations yet</label>
+              <label class="option"><input type="radio" name="q_user_knowledge" value="hypothesis" /> A hypothesis I want to test</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3 class="block-title">Understanding them</h3>
+
+          <div class="field">
+            <span class="field-number">17</span>
+            <label class="field-label" for="q_user_cares">What do they care about most?</label>
+            <span class="field-helper">In life, in this category, in how they spend time.</span>
+            <textarea id="q_user_cares" name="q_user_cares" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">18</span>
+            <label class="field-label" for="q_user_objections">What would make them not use the product, even if it solved their problem?</label>
+            <span class="field-helper">Trust concerns, cultural fit, friction, anything that would stop them.</span>
+            <textarea id="q_user_objections" name="q_user_objections" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">19</span>
+            <label class="field-label" for="q_user_reach">How will you reach them?</label>
+            <span class="field-helper">Communities, influencers, friends, content, partnerships. Where do they already gather?</span>
+            <textarea id="q_user_reach" name="q_user_reach" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4 -->
+    <section class="screen form-screen" id="section-4" data-section="4">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">04 / 14</span>
+          <h2 class="section-title">The product<br /><em>in your head</em></h2>
+          <p class="section-intro">What it is, how it works, and what it borrows from.</p>
+        </header>
+
+        <div class="block">
+          <h3 class="block-title">The shape of it</h3>
+
+          <div class="field">
+            <span class="field-number">20</span>
+            <label class="field-label" for="q_one_liner">In one or two sentences, what is the product?</label>
+            <span class="field-helper">A short, plain-language description.</span>
+            <textarea id="q_one_liner" name="q_one_liner" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">21</span>
+            <label class="field-label" for="q_typical_use">Describe what someone does with it on a typical day or session</label>
+            <span class="field-helper">Walk me through the experience as if you were watching a user.</span>
+            <textarea id="q_typical_use" name="q_typical_use" rows="5" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">22</span>
+            <span class="field-label">What product types does it draw from?</span>
+            <span class="field-helper">Pick all that feel relevant.</span>
+            <div class="options" role="group" aria-label="Product types">
+              <label class="option"><input type="checkbox" name="q_product_types" value="social-network" /> Social network</label>
+              <label class="option"><input type="checkbox" name="q_product_types" value="community" /> Community</label>
+              <label class="option"><input type="checkbox" name="q_product_types" value="marketplace-products" /> Marketplace for products</label>
+              <label class="option"><input type="checkbox" name="q_product_types" value="marketplace-services" /> Marketplace for services</label>
+              <label class="option"><input type="checkbox" name="q_product_types" value="content-feed" /> Content or feed</label>
+              <label class="option"><input type="checkbox" name="q_product_types" value="events" /> Events platform</label>
+              <label class="option"><input type="checkbox" name="q_product_types" value="education" /> Education or courses</label>
+              <label class="option"><input type="checkbox" name="q_product_types" value="messaging" /> Messaging</label>
+              <label class="option"><input type="checkbox" name="q_product_types" value="tool" /> Tool or utility</label>
+              <label class="option"><input type="checkbox" name="q_product_types" value="saas" /> SaaS or B2B tool</label>
+              <label class="option"><input type="checkbox" name="q_product_types" value="other" /> Other</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3 class="block-title">References</h3>
+
+          <div class="field">
+            <span class="field-number">23</span>
+            <label class="field-label" for="q_inspirations">What products inspired this?</label>
+            <span class="field-helper">Apps, websites, services you admire or reference.</span>
+            <textarea id="q_inspirations" name="q_inspirations" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">24</span>
+            <label class="field-label" for="q_different_from">What do you want to do differently from those references?</label>
+            <span class="field-helper">Where do they fall short, and where will yours diverge?</span>
+            <textarea id="q_different_from" name="q_different_from" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">25</span>
+            <span class="field-label">What languages does the product need to support?</span>
+            <span class="field-helper">Pick all that apply. Right-to-left languages need extra design and QA work.</span>
+            <div class="options" role="group" aria-label="Languages">
+              <label class="option"><input type="checkbox" name="q_languages" value="hebrew" /> Hebrew (right-to-left)</label>
+              <label class="option"><input type="checkbox" name="q_languages" value="english" /> English</label>
+              <label class="option"><input type="checkbox" name="q_languages" value="arabic" /> Arabic (right-to-left)</label>
+              <label class="option"><input type="checkbox" name="q_languages" value="russian" /> Russian</label>
+              <label class="option"><input type="checkbox" name="q_languages" value="french" /> French</label>
+              <label class="option"><input type="checkbox" name="q_languages" value="spanish" /> Spanish</label>
+              <label class="option"><input type="checkbox" name="q_languages" value="other" /> Other (please add in technical constraints)</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5 -->
+    <section class="screen form-screen" id="section-5" data-section="5">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">05 / 14</span>
+          <h2 class="section-title">Value<br /><em>and difference</em></h2>
+          <p class="section-intro">What makes this worth building, and what makes it yours.</p>
+        </header>
+
+        <div class="block">
+          <h3 class="block-title">Why people will use it</h3>
+
+          <div class="field">
+            <span class="field-number">26</span>
+            <label class="field-label" for="q_core_value">What is the single most valuable thing this product gives a user?</label>
+            <span class="field-helper">If they had to keep just one thing about it, what would it be?</span>
+            <textarea id="q_core_value" name="q_core_value" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">27</span>
+            <label class="field-label" for="q_alternatives">What alternatives exist today, and where do they fall short for your users?</label>
+            <textarea id="q_alternatives" name="q_alternatives" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">28</span>
+            <label class="field-label" for="q_different">What makes your version meaningfully different?</label>
+            <span class="field-helper">The thing that earns people's switch or attention.</span>
+            <textarea id="q_different" name="q_different" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">29</span>
+            <label class="field-label" for="q_friend_pitch">If a user described the product to a friend in one sentence, what would you want them to say?</label>
+            <textarea id="q_friend_pitch" name="q_friend_pitch" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6 -->
+    <section class="screen form-screen" id="section-6" data-section="6">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">06 / 14</span>
+          <h2 class="section-title">Feature<br /><em>brain dump</em></h2>
+          <p class="section-intro">Get everything out of your head. We'll prioritize in the next section.</p>
+        </header>
+
+        <div class="block">
+          <h3 class="block-title">Everything you imagine</h3>
+
+          <div class="field">
+            <span class="field-number">30</span>
+            <label class="field-label" for="q_brain_dump">List every feature, capability, or experience you imagine the product having</label>
+            <span class="field-helper">No filtering. Bullet points are great. Big and small, obvious and ambitious.</span>
+            <textarea id="q_brain_dump" name="q_brain_dump" rows="8" class="large" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">31</span>
+            <label class="field-label" for="q_signature">Are there any signature or defining features?</label>
+            <span class="field-helper">The ones that, if removed, would make the product not really the same thing.</span>
+            <textarea id="q_signature" name="q_signature" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7 -->
+    <section class="screen form-screen" id="section-7" data-section="7">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">07 / 14</span>
+          <h2 class="section-title">MVP<br /><em>and what waits</em></h2>
+          <p class="section-intro">Now let's cut. What makes the first version, what comes next, what waits.</p>
+        </header>
+
+        <div class="block">
+          <h3 class="block-title">Priorities</h3>
+
+          <div class="field">
+            <span class="field-number">32</span>
+            <label class="field-label" for="q_mvp_must">What are the 3 to 5 things the product cannot launch without?</label>
+            <span class="field-helper">If any of these are missing, it's not the product. Be ruthless.</span>
+            <textarea id="q_mvp_must" name="q_mvp_must" rows="5" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">33</span>
+            <label class="field-label" for="q_mvp_nice">What would be great to have but can wait?</label>
+            <span class="field-helper">Things you would add in version 1.5 or 2.</span>
+            <textarea id="q_mvp_nice" name="q_mvp_nice" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">34</span>
+            <label class="field-label" for="q_mvp_later">What probably belongs to a much later version?</label>
+            <span class="field-helper">Bigger bets, ambitious adjacencies, things you've imagined but don't need yet.</span>
+            <textarea id="q_mvp_later" name="q_mvp_later" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8 -->
+    <section class="screen form-screen" id="section-8" data-section="8">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">08 / 14</span>
+          <h2 class="section-title">Platforms<br /><em>and technology</em></h2>
+          <p class="section-intro">Where it lives and how it connects to the rest of the world.</p>
+        </header>
+
+        <div class="block">
+          <h3 class="block-title">Platforms</h3>
+
+          <div class="field">
+            <span class="field-number">35</span>
+            <span class="field-label">Which platforms should the product be available on at launch?</span>
+            <span class="field-helper">Pick all that apply. We can refine which are MVP versus later.</span>
+            <div class="options" role="group" aria-label="Platforms">
+              <label class="option"><input type="checkbox" name="q_platforms" value="ios" /> iOS app</label>
+              <label class="option"><input type="checkbox" name="q_platforms" value="android" /> Android app</label>
+              <label class="option"><input type="checkbox" name="q_platforms" value="web" /> Web app</label>
+              <label class="option"><input type="checkbox" name="q_platforms" value="mobile-web" /> Mobile web (responsive site)</label>
+              <label class="option"><input type="checkbox" name="q_platforms" value="desktop" /> Desktop app</label>
+              <label class="option"><input type="checkbox" name="q_platforms" value="not-sure" /> Not sure yet</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field-number">36</span>
+            <label class="field-label" for="q_integrations">Are there external platforms or tools the product should integrate with?</label>
+            <span class="field-helper">For example: Instagram, YouTube, Zoom, payments, email, calendars.</span>
+            <textarea id="q_integrations" name="q_integrations" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3 class="block-title">AI and constraints</h3>
+
+          <div class="field">
+            <span class="field-number">37</span>
+            <span class="field-label">Should the product include AI capabilities?</span>
+            <div class="options" role="radiogroup" aria-label="AI">
+              <label class="option"><input type="radio" name="q_ai_use" value="central" /> Yes, AI is central to the experience</label>
+              <label class="option"><input type="radio" name="q_ai_use" value="specific" /> Yes, in specific places</label>
+              <label class="option"><input type="radio" name="q_ai_use" value="open" /> Maybe, open to suggestions</label>
+              <label class="option"><input type="radio" name="q_ai_use" value="no" /> No</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field-number">38</span>
+            <label class="field-label" for="q_ai_where">If yes, where do you imagine AI helping?</label>
+            <span class="field-helper">Discovery, moderation, personalization, content generation, support, something else?</span>
+            <textarea id="q_ai_where" name="q_ai_where" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">39</span>
+            <label class="field-label" for="q_tech_constraints">Are there any technical constraints or preferences I should know about?</label>
+            <span class="field-helper">For example: must support a specific language, must work offline, must integrate with an existing system.</span>
+            <textarea id="q_tech_constraints" name="q_tech_constraints" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 9 -->
+    <section class="screen form-screen" id="section-9" data-section="9">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">09 / 14</span>
+          <h2 class="section-title">Trust<br /><em>and safety</em></h2>
+          <p class="section-intro">Who's in, who's out, and how you protect the people inside.</p>
+        </header>
+
+        <div class="block">
+          <h3 class="block-title">Data and access</h3>
+
+          <div class="field">
+            <span class="field-number">40</span>
+            <span class="field-label">How sensitive is the data the product handles?</span>
+            <div class="options" role="radiogroup" aria-label="Data sensitivity">
+              <label class="option"><input type="radio" name="q_data_sensitivity" value="very" /> Very sensitive (identity, financial, health, private community)</label>
+              <label class="option"><input type="radio" name="q_data_sensitivity" value="moderate" /> Moderately sensitive (personal but not regulated)</label>
+              <label class="option"><input type="radio" name="q_data_sensitivity" value="low" /> Low sensitivity (mostly public-facing content)</label>
+              <label class="option"><input type="radio" name="q_data_sensitivity" value="not-sure" /> Not sure</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field-number">41</span>
+            <label class="field-label" for="q_access">Who should have access to the product, and who should not?</label>
+            <textarea id="q_access" name="q_access" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">42</span>
+            <label class="field-label" for="q_verification">How should new users be verified or admitted?</label>
+            <span class="field-helper">Invitation, approval, identity check, community vouching, open signup with screening, something else?</span>
+            <textarea id="q_verification" name="q_verification" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3 class="block-title">Risk and compliance</h3>
+
+          <div class="field">
+            <span class="field-number">43</span>
+            <label class="field-label" for="q_abuse_concerns">What are your concerns around fake users, bots, abuse, or misuse?</label>
+            <textarea id="q_abuse_concerns" name="q_abuse_concerns" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">44</span>
+            <label class="field-label" for="q_compliance">Are there any legal, regulatory, religious, or cultural requirements to consider?</label>
+            <span class="field-helper">Anything the product must do, or must never do.</span>
+            <textarea id="q_compliance" name="q_compliance" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">45</span>
+            <label class="field-label" for="q_data_residency">Are there requirements about where the servers and data must live?</label>
+            <span class="field-helper">For example: Israel only, EU only, must comply with specific data protection laws. Optional.</span>
+            <textarea id="q_data_residency" name="q_data_residency" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">46</span>
+            <span class="field-label">Does the product need to observe religious schedules?</span>
+            <span class="field-helper">For example, "shomer Shabbat" platforms close or pause during Shabbat (Friday sunset to Saturday sunset) and Jewish holidays.</span>
+            <div class="options" role="radiogroup" aria-label="Religious observance">
+              <label class="option"><input type="radio" name="q_religious_observance" value="full" /> Yes, fully observant (closed during Shabbat and holidays)</label>
+              <label class="option"><input type="radio" name="q_religious_observance" value="partial" /> Partially (some features pause, like payments or notifications)</label>
+              <label class="option"><input type="radio" name="q_religious_observance" value="no" /> No</label>
+              <label class="option"><input type="radio" name="q_religious_observance" value="discuss" /> Not sure, want to discuss</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 10 -->
+    <section class="screen form-screen" id="section-10" data-section="10">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">10 / 14</span>
+          <h2 class="section-title">Business<br /><em>and revenue</em></h2>
+          <p class="section-intro">How the product creates value, and how that value comes back to you.</p>
+        </header>
+
+        <div class="block">
+          <h3 class="block-title">Model</h3>
+
+          <div class="field">
+            <span class="field-number">47</span>
+            <span class="field-label">How do you imagine the product making money?</span>
+            <span class="field-helper">Pick all that apply, even if you're not certain yet.</span>
+            <div class="options" role="group" aria-label="Revenue model">
+              <label class="option"><input type="checkbox" name="q_revenue_model" value="subscription" /> Subscription</label>
+              <label class="option"><input type="checkbox" name="q_revenue_model" value="one-time" /> One-time purchases</label>
+              <label class="option"><input type="checkbox" name="q_revenue_model" value="marketplace-commission" /> Marketplace commissions</label>
+              <label class="option"><input type="checkbox" name="q_revenue_model" value="advertising" /> Advertising</label>
+              <label class="option"><input type="checkbox" name="q_revenue_model" value="premium" /> Premium features</label>
+              <label class="option"><input type="checkbox" name="q_revenue_model" value="membership" /> Memberships</label>
+              <label class="option"><input type="checkbox" name="q_revenue_model" value="not-decided" /> Not yet decided</label>
+              <label class="option"><input type="checkbox" name="q_revenue_model" value="other" /> Other</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field-number">48</span>
+            <label class="field-label" for="q_marketplace_mechanics">If there's a marketplace, how should money flow?</label>
+            <span class="field-helper">For example: buyers pay sellers directly, the platform takes a cut and pays out monthly, escrow holds funds until delivery, which currencies (USD, ILS, EUR). Skip if no marketplace.</span>
+            <textarea id="q_marketplace_mechanics" name="q_marketplace_mechanics" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">49</span>
+            <label class="field-label" for="q_who_pays">Who pays, and what would they be paying for?</label>
+            <textarea id="q_who_pays" name="q_who_pays" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">50</span>
+            <label class="field-label" for="q_pricing">Do you have a pricing hypothesis or range in mind?</label>
+            <span class="field-helper">Even a rough number helps.</span>
+            <textarea id="q_pricing" name="q_pricing" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3 class="block-title">Going to market</h3>
+
+          <div class="field">
+            <span class="field-number">51</span>
+            <label class="field-label" for="q_first_users">How will you bring the first users in?</label>
+            <span class="field-helper">Who do you already know, who can vouch for you, where will you start?</span>
+            <textarea id="q_first_users" name="q_first_users" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 11 -->
+    <section class="screen form-screen" id="section-11" data-section="11">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">11 / 14</span>
+          <h2 class="section-title">After<br /><em>launch</em></h2>
+          <p class="section-intro">Building it is one thing. Running it is another.</p>
+        </header>
+
+        <div class="block">
+          <h3 class="block-title">Running the product</h3>
+
+          <div class="field">
+            <span class="field-number">52</span>
+            <label class="field-label" for="q_who_runs">Once launched, who will run the product day to day?</label>
+            <span class="field-helper">You, someone you'd hire, a partner, a team?</span>
+            <textarea id="q_who_runs" name="q_who_runs" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">53</span>
+            <label class="field-label" for="q_content_moderation">Does the product require ongoing content, moderation, or curation?</label>
+            <span class="field-helper">Who is responsible for that, and how often?</span>
+            <textarea id="q_content_moderation" name="q_content_moderation" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">54</span>
+            <label class="field-label" for="q_support">What customer support model do you envision?</label>
+            <span class="field-helper">High-touch, async only, community-led, automated, mix?</span>
+            <textarea id="q_support" name="q_support" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">55</span>
+            <span class="field-label">What ongoing partnership do you want after launch?</span>
+            <div class="options" role="radiogroup" aria-label="Partnership">
+              <label class="option"><input type="radio" name="q_partnership" value="handoff" /> Hand-off, you continue independently</label>
+              <label class="option"><input type="radio" name="q_partnership" value="light-advisory" /> Light advisory</label>
+              <label class="option"><input type="radio" name="q_partnership" value="ongoing-partnership" /> Ongoing partnership for growth and iteration</label>
+              <label class="option"><input type="radio" name="q_partnership" value="not-sure" /> Not sure yet</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 12 -->
+    <section class="screen form-screen" id="section-12" data-section="12">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">12 / 14</span>
+          <h2 class="section-title">Goals<br /><em>and risks</em></h2>
+          <p class="section-intro">What success means, and what could go wrong.</p>
+        </header>
+
+        <div class="block">
+          <h3 class="block-title">Success</h3>
+
+          <div class="field">
+            <span class="field-number">56</span>
+            <label class="field-label" for="q_6_month">What does success look like in the first 6 months?</label>
+            <span class="field-helper">User numbers, engagement, revenue, learning, anything that matters to you.</span>
+            <textarea id="q_6_month" name="q_6_month" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">57</span>
+            <label class="field-label" for="q_12_24_month">What does success look like in 12 to 24 months?</label>
+            <textarea id="q_12_24_month" name="q_12_24_month" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3 class="block-title">Risks</h3>
+
+          <div class="field">
+            <span class="field-number">58</span>
+            <label class="field-label" for="q_risks">What are the biggest risks you see?</label>
+            <span class="field-helper">Business, product, technical, operational. Anything that worries you.</span>
+            <textarea id="q_risks" name="q_risks" rows="5" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">59</span>
+            <label class="field-label" for="q_keeps_up">What keeps you up at night about this project?</label>
+            <span class="field-helper">Optional, only if you want to share it.</span>
+            <textarea id="q_keeps_up" name="q_keeps_up" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 13 -->
+    <section class="screen form-screen" id="section-13" data-section="13">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">13 / 14</span>
+          <h2 class="section-title">Constraints</h2>
+          <p class="section-intro">The real-world edges. Time, money, anything else that shapes the project.</p>
+        </header>
+
+        <div class="block">
+          <h3 class="block-title">Timeline</h3>
+
+          <div class="field">
+            <span class="field-number">60</span>
+            <span class="field-label">Do you have a target launch timeline?</span>
+            <div class="options" role="radiogroup" aria-label="Timeline">
+              <label class="option"><input type="radio" name="q_timeline" value="asap" /> As soon as possible</label>
+              <label class="option"><input type="radio" name="q_timeline" value="3m" /> Within 3 months</label>
+              <label class="option"><input type="radio" name="q_timeline" value="6m" /> Within 6 months</label>
+              <label class="option"><input type="radio" name="q_timeline" value="year" /> Within a year</label>
+              <label class="option"><input type="radio" name="q_timeline" value="flexible" /> Flexible</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field-number">61</span>
+            <label class="field-label" for="q_deadline">Is there a hard deadline driving the timeline?</label>
+            <span class="field-helper">A funding round, an event, a season, a partnership. Optional.</span>
+            <textarea id="q_deadline" name="q_deadline" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3 class="block-title">Investment</h3>
+
+          <div class="field">
+            <span class="field-number">62</span>
+            <span class="field-label">How do you imagine us working together on the financial side?</span>
+            <span class="field-helper">There's no single right answer. Pick what feels right, or pick more than one if you're open. We'll figure out the best fit on our call.</span>
+            <div class="options" role="group" aria-label="Engagement model">
+              <label class="option"><input type="checkbox" name="q_engagement_model_pref" value="per-project" /> Per project (one total price for a defined scope)</label>
+              <label class="option"><input type="checkbox" name="q_engagement_model_pref" value="by-phase" /> By phase (pay phase by phase as the work progresses)</label>
+              <label class="option"><input type="checkbox" name="q_engagement_model_pref" value="hours-pack" /> Hours pack (pre-purchased blocks of hours, used flexibly)</label>
+              <label class="option"><input type="checkbox" name="q_engagement_model_pref" value="monthly-retainer" /> Monthly retainer (fixed monthly fee for ongoing partnership)</label>
+              <label class="option"><input type="checkbox" name="q_engagement_model_pref" value="time-materials" /> Time and materials (pay for actual hours worked)</label>
+              <label class="option"><input type="checkbox" name="q_engagement_model_pref" value="recommendation" /> Not sure, would appreciate a recommendation</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field-number">63</span>
+            <label class="field-label" for="q_other_constraints">Any other constraints I should know about?</label>
+            <textarea id="q_other_constraints" name="q_other_constraints" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 14 -->
+    <section class="screen form-screen" id="section-14" data-section="14">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">14 / 14</span>
+          <h2 class="section-title">Working<br /><em>together</em></h2>
+          <p class="section-intro">How you want to collaborate, and what kind of help you're looking for.</p>
+        </header>
+
+        <div class="block">
+          <h3 class="block-title">The engagement</h3>
+
+          <div class="field">
+            <span class="field-number">64</span>
+            <span class="field-label">What kind of help are you looking for?</span>
+            <span class="field-helper">Pick everything that sounds relevant.</span>
+            <div class="options" role="group" aria-label="Engagement type">
+              <label class="option"><input type="checkbox" name="q_engagement_type" value="strategy" /> Strategic consulting</label>
+              <label class="option"><input type="checkbox" name="q_engagement_type" value="discovery" /> Discovery and product definition</label>
+              <label class="option"><input type="checkbox" name="q_engagement_type" value="design" /> Design only</label>
+              <label class="option"><input type="checkbox" name="q_engagement_type" value="mvp" /> MVP and prototype</label>
+              <label class="option"><input type="checkbox" name="q_engagement_type" value="full-build" /> Full product build</label>
+              <label class="option"><input type="checkbox" name="q_engagement_type" value="advisory" /> Ongoing partnership and advisory</label>
+              <label class="option"><input type="checkbox" name="q_engagement_type" value="recommend" /> Not sure, want a recommendation</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field-number">65</span>
+            <label class="field-label" for="q_decision_maker">Who has final decision-making authority on scope and budget?</label>
+            <textarea id="q_decision_maker" name="q_decision_maker" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">66</span>
+            <label class="field-label" for="q_collaboration">How do you prefer to collaborate?</label>
+            <span class="field-helper">Weekly calls, async messaging, milestone reviews, fully embedded, something else?</span>
+            <textarea id="q_collaboration" name="q_collaboration" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+
+          <div class="field">
+            <span class="field-number">67</span>
+            <label class="field-label" for="q_anything_else">Anything else you want me to know before we talk?</label>
+            <textarea id="q_anything_else" name="q_anything_else" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
+          <button class="cta" data-action="next" type="button">Review your answers <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- REVIEW SCREEN -->
+    <section class="screen form-screen" id="review" data-section="15">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">Almost done</span>
+          <h2 class="section-title">That's it.<br /><em>Thank you.</em></h2>
+          <p class="section-intro">Download your answers as a markdown file and send it back to me. I'll read it carefully and come back to you with a recommended direction, scope, and proposal.</p>
+        </header>
+
+        <div class="review-stats">
+          <div class="stat">
+            <span class="stat-value" id="stat-answered">0</span>
+            <span class="stat-label">Answered</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="stat-total">67</span>
+            <span class="stat-label">Total questions</span>
+          </div>
+        </div>
+
+        <div class="cta-row">
+          <button class="cta" id="download-btn" type="button">
+            Download your answers
+            <span class="cta-arrow">&darr;</span>
+          </button>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'galgal_discovery_v2';
+    const TOTAL_SECTIONS = 14;
+    const CLIENT_NAME = 'Galgal';
+    const CLIENT_FOUNDER = 'Alana Yakovlev';
+    const CLIENT_FIRST_NAME = 'Alana';
+
+    const greetingNameEl = document.getElementById('greeting-name');
+    if (greetingNameEl) greetingNameEl.textContent = CLIENT_FIRST_NAME;
+    document.title = 'Discovery Questionnaire · ' + CLIENT_NAME;
+
+    const MANIFEST = [
+      { number: 1, title: 'About you and the venture', fields: [
+        { name: 'q_full_name', label: 'Your full name' },
+        { name: 'q_role', label: 'Your role or title' },
+        { name: 'q_email', label: 'Email' },
+        { name: 'q_location', label: 'Country and city' },
+        { name: 'q_venture_name', label: 'Working name of the company or product' },
+        { name: 'q_stage', label: 'What stage is the venture at?' },
+        { name: 'q_team_structure', label: 'Are you working on this' },
+      ]},
+      { number: 2, title: 'Vision and problem', fields: [
+        { name: 'q_problem', label: 'What problem are you trying to solve?' },
+        { name: 'q_problem_workaround', label: 'Who has this problem, and how do they handle it today?' },
+        { name: 'q_problem_matters', label: 'Why does this problem matter?' },
+        { name: 'q_why_now', label: 'Why now?' },
+        { name: 'q_long_term_success', label: 'What does success look like in the long run?' },
+        { name: 'q_inspiration', label: 'What inspired this idea?' },
+      ]},
+      { number: 3, title: 'Users and audience', fields: [
+        { name: 'q_primary_user', label: 'Describe your primary user' },
+        { name: 'q_secondary_user', label: 'Is there a secondary or adjacent audience?' },
+        { name: 'q_user_knowledge', label: 'How well do you know these users today?' },
+        { name: 'q_user_cares', label: 'What do they care about most?' },
+        { name: 'q_user_objections', label: 'What would make them not use the product, even if it solved their problem?' },
+        { name: 'q_user_reach', label: 'How will you reach them?' },
+      ]},
+      { number: 4, title: 'The product in your head', fields: [
+        { name: 'q_one_liner', label: 'In one or two sentences, what is the product?' },
+        { name: 'q_typical_use', label: 'Describe what someone does with it on a typical day or session' },
+        { name: 'q_product_types', label: 'What product types does it draw from?' },
+        { name: 'q_inspirations', label: 'What products inspired this?' },
+        { name: 'q_different_from', label: 'What do you want to do differently from those references?' },
+        { name: 'q_languages', label: 'Languages the product must support' },
+      ]},
+      { number: 5, title: 'Value and difference', fields: [
+        { name: 'q_core_value', label: 'What is the single most valuable thing this product gives a user?' },
+        { name: 'q_alternatives', label: 'What alternatives exist today, and where do they fall short for your users?' },
+        { name: 'q_different', label: 'What makes your version meaningfully different?' },
+        { name: 'q_friend_pitch', label: 'If a user described the product to a friend in one sentence, what would you want them to say?' },
+      ]},
+      { number: 6, title: 'Feature brain dump', fields: [
+        { name: 'q_brain_dump', label: 'Every feature, capability, or experience you imagine' },
+        { name: 'q_signature', label: 'Signature or defining features' },
+      ]},
+      { number: 7, title: 'MVP and what waits', fields: [
+        { name: 'q_mvp_must', label: 'The 3 to 5 things the product cannot launch without' },
+        { name: 'q_mvp_nice', label: 'Great to have but can wait' },
+        { name: 'q_mvp_later', label: 'Belongs to a much later version' },
+      ]},
+      { number: 8, title: 'Platforms and technology', fields: [
+        { name: 'q_platforms', label: 'Platforms at launch' },
+        { name: 'q_integrations', label: 'External platforms or tools to integrate with' },
+        { name: 'q_ai_use', label: 'Should the product include AI capabilities?' },
+        { name: 'q_ai_where', label: 'Where AI helps' },
+        { name: 'q_tech_constraints', label: 'Technical constraints or preferences' },
+      ]},
+      { number: 9, title: 'Trust and safety', fields: [
+        { name: 'q_data_sensitivity', label: 'How sensitive is the data the product handles?' },
+        { name: 'q_access', label: 'Who should have access, and who should not?' },
+        { name: 'q_verification', label: 'How should new users be verified or admitted?' },
+        { name: 'q_abuse_concerns', label: 'Concerns around fake users, bots, abuse, or misuse' },
+        { name: 'q_compliance', label: 'Legal, regulatory, religious, or cultural requirements' },
+        { name: 'q_data_residency', label: 'Data residency requirements' },
+        { name: 'q_religious_observance', label: 'Religious schedule observance (e.g., Shabbat)' },
+      ]},
+      { number: 10, title: 'Business and revenue', fields: [
+        { name: 'q_revenue_model', label: 'How the product makes money' },
+        { name: 'q_marketplace_mechanics', label: 'Marketplace money flow (if applicable)' },
+        { name: 'q_who_pays', label: 'Who pays, and what they would be paying for' },
+        { name: 'q_pricing', label: 'Pricing hypothesis or range' },
+        { name: 'q_first_users', label: 'How you will bring the first users in' },
+      ]},
+      { number: 11, title: 'After launch', fields: [
+        { name: 'q_who_runs', label: 'Who will run the product day to day' },
+        { name: 'q_content_moderation', label: 'Ongoing content, moderation, or curation' },
+        { name: 'q_support', label: 'Customer support model' },
+        { name: 'q_partnership', label: 'Ongoing partnership after launch' },
+      ]},
+      { number: 12, title: 'Goals and risks', fields: [
+        { name: 'q_6_month', label: 'Success in the first 6 months' },
+        { name: 'q_12_24_month', label: 'Success in 12 to 24 months' },
+        { name: 'q_risks', label: 'Biggest risks' },
+        { name: 'q_keeps_up', label: 'What keeps you up at night about this project' },
+      ]},
+      { number: 13, title: 'Constraints', fields: [
+        { name: 'q_timeline', label: 'Target launch timeline' },
+        { name: 'q_deadline', label: 'Hard deadline driving the timeline' },
+        { name: 'q_engagement_model_pref', label: 'How they imagine us working together financially' },
+        { name: 'q_other_constraints', label: 'Other constraints' },
+      ]},
+      { number: 14, title: 'Working together', fields: [
+        { name: 'q_engagement_type', label: 'Kind of help you are looking for' },
+        { name: 'q_decision_maker', label: 'Final decision-making authority on scope and budget' },
+        { name: 'q_collaboration', label: 'How you prefer to collaborate' },
+        { name: 'q_anything_else', label: 'Anything else you want me to know' },
+      ]},
+    ];
+
+    let state = {};
+    try { state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) { state = {}; }
+
+    function restoreInputs() {
+      Object.entries(state).forEach(([key, value]) => {
+        const els = document.querySelectorAll('[name="' + key + '"]');
+        els.forEach(el => {
+          if (el.type === 'radio') {
+            el.checked = el.value === value;
+          } else if (el.type === 'checkbox') {
+            if (Array.isArray(value)) el.checked = value.includes(el.value);
+          } else {
+            el.value = value;
+          }
+        });
+      });
+    }
+
+    function saveInput(e) {
+      const el = e.target;
+      if (!el.name) return;
+      if (el.type === 'radio') {
+        if (el.checked) state[el.name] = el.value;
+      } else if (el.type === 'checkbox') {
+        if (!state[el.name] || !Array.isArray(state[el.name])) state[el.name] = [];
+        if (el.checked) {
+          if (!state[el.name].includes(el.value)) state[el.name].push(el.value);
+        } else {
+          state[el.name] = state[el.name].filter(v => v !== el.value);
+        }
+      } else {
+        state[el.name] = el.value;
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    document.addEventListener('input', saveInput);
+    document.addEventListener('change', saveInput);
+
+    function showScreen(id) {
+      const target = document.getElementById(id);
+      if (!target) {
+        alert('That section is not built yet.');
+        return;
+      }
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      target.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      updateProgress(id);
+      if (id === 'review') updateReviewStats();
+    }
+
+    function updateProgress(id) {
+      const fill = document.querySelector('.progress-fill');
+      if (!fill) return;
+      if (id === 'lobby') { fill.style.width = '0%'; return; }
+      if (id === 'review') { fill.style.width = '100%'; return; }
+      const match = id.match(/section-(\d+)/);
+      if (!match) return;
+      const n = parseInt(match[1], 10);
+      fill.style.width = ((n / TOTAL_SECTIONS) * 100) + '%';
+    }
+
+    function countAnswered() {
+      let answered = 0;
+      let total = 0;
+      MANIFEST.forEach(s => {
+        s.fields.forEach(f => {
+          total++;
+          const v = state[f.name];
+          if (v === undefined || v === null || v === '') return;
+          if (Array.isArray(v) && v.length === 0) return;
+          answered++;
+        });
+      });
+      return { answered, total };
+    }
+
+    function updateReviewStats() {
+      const { answered, total } = countAnswered();
+      const a = document.getElementById('stat-answered');
+      const t = document.getElementById('stat-total');
+      if (a) a.textContent = answered;
+      if (t) t.textContent = total;
+    }
+
+    function generateMarkdown() {
+      const today = new Date().toISOString().split('T')[0];
+      const { answered, total } = countAnswered();
+      let md = '# Discovery Questionnaire\n';
+      md += '## ' + CLIENT_NAME + ', ' + CLIENT_FOUNDER + '\n\n';
+      md += '*Completed ' + today + '. ' + answered + ' of ' + total + ' questions answered.*\n\n';
+      MANIFEST.forEach(s => {
+        const num = String(s.number).padStart(2, '0');
+        md += '\n## ' + num + '. ' + s.title + '\n\n';
+        s.fields.forEach(f => {
+          md += '### ' + f.label + '\n\n';
+          const v = state[f.name];
+          if (v === undefined || v === null || v === '' || (Array.isArray(v) && v.length === 0)) {
+            md += '_Not answered_\n\n';
+          } else if (Array.isArray(v)) {
+            v.forEach(item => { md += '- ' + item + '\n'; });
+            md += '\n';
+          } else {
+            md += v + '\n\n';
+          }
+        });
+      });
+      return md;
+    }
+
+    function downloadMarkdown() {
+      const md = generateMarkdown();
+      const blob = new Blob([md], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const today = new Date().toISOString().split('T')[0];
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = CLIENT_NAME.toLowerCase() + '-discovery-' + today + '.md';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    document.getElementById('begin-btn').addEventListener('click', () => showScreen('section-1'));
+    document.getElementById('download-btn').addEventListener('click', downloadMarkdown);
+
+    document.querySelectorAll('[data-action="next"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const current = btn.closest('.screen');
+        const n = parseInt(current.dataset.section, 10);
+        if (n >= TOTAL_SECTIONS) showScreen('review');
+        else showScreen('section-' + (n + 1));
+      });
+    });
+
+    document.querySelectorAll('[data-action="back"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const current = btn.closest('.screen');
+        const n = parseInt(current.dataset.section, 10);
+        if (n === 15) showScreen('section-14');
+        else if (n <= 1) showScreen('lobby');
+        else showScreen('section-' + (n - 1));
+      });
+    });
+
+    restoreInputs();
+    showScreen('lobby');
+  </script>
+</body>
+</html>

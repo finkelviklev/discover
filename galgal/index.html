@@ -396,6 +396,37 @@
       color: var(--ink);
       margin-bottom: 14px;
     }
+    .email-link {
+      color: var(--ink);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    .email-link:hover {
+      color: var(--ink);
+      text-decoration-thickness: 2px;
+    }
+    .download-confirm {
+      margin-top: 32px;
+      padding: 32px 36px;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      max-width: 620px;
+    }
+    .download-confirm-title {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: clamp(32px, 3.4vw, 42px);
+      font-weight: 400;
+      font-style: italic;
+      margin-bottom: 14px;
+    }
+    .download-confirm-body {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--ink);
+      margin-bottom: 24px;
+    }
 
     .overlay {
       position: fixed;
@@ -1383,8 +1414,8 @@
       <div class="container">
         <header class="section-header">
           <span class="section-number">Almost done</span>
-          <h2 class="section-title">Ready?<br /><em>Send it.</em></h2>
-          <p class="section-intro">When you click Finish below, your answers come to me by email and a copy lands in your inbox for your records. I'll read everything carefully and come back to you with a recommended direction, scope, and a tailored proposal.</p>
+          <h2 class="section-title">That's it.<br /><em>Thank you.</em></h2>
+          <p class="section-intro">Two steps to wrap up. Click <strong>Download</strong> below to save your answers as a markdown file, then email the file to me at <a class="email-link" href="mailto:finkeldesign@gmail.com?subject=Discovery%20answers%20from%20Galgal&body=Hi%20Vika%2C%0A%0AAttaching%20my%20answers%20to%20the%20discovery%20questionnaire.%0A%0A">finkeldesign@gmail.com</a>. I'll read everything carefully and come back to you with a recommended direction, scope, and a tailored proposal.</p>
           <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
         </header>
 
@@ -1399,30 +1430,26 @@
           </div>
         </div>
 
-        <div class="cta-row" id="review-form">
-          <button class="cta" id="finish-btn" type="button">
-            Finish
-            <span class="cta-arrow">&rarr;</span>
+        <div class="cta-row" id="download-row">
+          <button class="cta" id="download-btn" type="button">
+            Download your answers
+            <span class="cta-arrow">&darr;</span>
           </button>
         </div>
 
-        <div class="review-error" id="review-error" hidden>
-          <p>Something went wrong sending your answers. Please try again, or use the download below as a backup.</p>
-          <button class="cta cta-secondary" id="download-fallback-btn" type="button">Download as backup <span class="cta-arrow">&darr;</span></button>
+        <div class="download-confirm" id="download-confirm" hidden>
+          <h3 class="download-confirm-title">Saved.</h3>
+          <p class="download-confirm-body">Your file is in your <strong>Downloads</strong> folder. Now email it to me at <a class="email-link" href="mailto:finkeldesign@gmail.com?subject=Discovery%20answers%20from%20Galgal&body=Hi%20Vika%2C%0A%0AAttaching%20my%20answers%20to%20the%20discovery%20questionnaire.%0A%0A">finkeldesign@gmail.com</a> and I'll take it from there.</p>
+          <div class="cta-row">
+            <a class="cta" href="mailto:finkeldesign@gmail.com?subject=Discovery%20answers%20from%20Galgal&body=Hi%20Vika%2C%0A%0AAttaching%20my%20answers%20to%20the%20discovery%20questionnaire.%0A%0A">
+              Open email to Vika
+              <span class="cta-arrow">&rarr;</span>
+            </a>
+          </div>
         </div>
-
       </div>
     </section>
   </main>
-
-  <div class="overlay" id="success-overlay" aria-hidden="true">
-    <div class="overlay-card">
-      <h2 class="overlay-title">Thank you,<br /><em>that's everything.</em></h2>
-      <p class="overlay-body">Your answers are with Vika. She'll go through them carefully and come back to you with a recommended direction and a tailored proposal.</p>
-      <p class="overlay-body">A copy has been sent to <strong id="overlay-email">your email</strong> for your records.</p>
-      <p class="overlay-meta">You can close this tab</p>
-    </div>
-  </div>
 
   <script>
     const STORAGE_KEY = 'galgal_discovery_v3';
@@ -1644,8 +1671,6 @@
       return md;
     }
 
-    var SUBMIT_EMAIL = 'finkeldesign@gmail.com';
-
     function downloadMarkdown() {
       var md = generateMarkdown();
       var blob = new Blob([md], { type: 'text/markdown' });
@@ -1658,66 +1683,16 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    }
 
-    async function finishAndSubmit() {
-      var md = generateMarkdown();
-      var alanaEmail = (state['q_email'] || '').trim();
-      var founderName = (state['q_full_name'] || CLIENT_FOUNDER || '').trim();
-      var ventureName = (state['q_venture_name'] || CLIENT_NAME || '').trim();
-      var firstName = founderName.split(' ')[0] || 'there';
+      document.getElementById('download-row').hidden = true;
+      document.getElementById('download-confirm').hidden = false;
 
-      var autoResponse = 'Hi ' + firstName + ',\n\n' +
-        'Thank you for completing the discovery questionnaire for ' + ventureName + '.\n\n' +
-        'I have received your answers and will read through them carefully over the next few days. I will come back to you with a recommended direction, scope, and a tailored proposal.\n\n' +
-        'For your records, your answers are included below.\n\n' +
-        'Speak soon,\nVika\n\n' +
-        '------\n\n' + md;
-
-      var fd = new FormData();
-      fd.append('email', alanaEmail);
-      fd.append('name', founderName);
-      fd.append('client', ventureName);
-      fd.append('_subject', 'Discovery submission: ' + ventureName + ' (' + founderName + ')');
-      fd.append('_template', 'box');
-      fd.append('_captcha', 'false');
-      fd.append('_autoresponse', autoResponse);
-      fd.append('answers', md);
-
-      var btn = document.getElementById('finish-btn');
-      btn.disabled = true;
-      btn.textContent = 'Sending...';
-
-      try {
-        var response = await fetch('https://formsubmit.co/ajax/' + SUBMIT_EMAIL, {
-          method: 'POST',
-          body: fd,
-          headers: { 'Accept': 'application/json' }
-        });
-        if (!response.ok) throw new Error('Submission failed: ' + response.status);
-        var data = await response.json();
-        if (data && data.success === false) throw new Error('FormSubmit returned not ok');
-
-        var overlayEmail = document.getElementById('overlay-email');
-        if (overlayEmail) overlayEmail.textContent = alanaEmail || 'the email you provided';
-        var overlay = document.getElementById('success-overlay');
-        overlay.classList.add('visible');
-        overlay.setAttribute('aria-hidden', 'false');
-        document.body.classList.add('overlay-open');
-        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
-        state = {};
-      } catch (e) {
-        console.error(e);
-        btn.disabled = false;
-        btn.textContent = 'Finish';
-        document.getElementById('review-error').hidden = false;
-      }
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+      state = {};
     }
 
     document.getElementById('begin-btn').addEventListener('click', function () { showScreen('section-1'); });
-    document.getElementById('finish-btn').addEventListener('click', finishAndSubmit);
-    var fallback = document.getElementById('download-fallback-btn');
-    if (fallback) fallback.addEventListener('click', downloadMarkdown);
+    document.getElementById('download-btn').addEventListener('click', downloadMarkdown);
 
     document.querySelectorAll('[data-action="next"]').forEach(btn => {
       btn.addEventListener('click', () => {

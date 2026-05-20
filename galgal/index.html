@@ -55,7 +55,7 @@
     .screen.form-screen {
       align-items: flex-start;
       padding-top: 72px;
-      padding-bottom: 140px;
+      padding-bottom: 80px;
     }
     .container {
       max-width: 780px;
@@ -322,21 +322,34 @@
     }
 
     .form-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      margin-top: 56px;
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
       gap: 16px;
-      padding: 18px 8vw;
-      background: rgba(245, 243, 238, 0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      padding-top: 36px;
       border-top: 1px solid var(--rule);
-      z-index: 10;
-      margin: 0;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 24px;
+      padding: 6px 0;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      color: var(--ink-soft);
+      background: none;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+      transition: color 0.15s ease;
+    }
+    .back-link:hover { color: var(--ink); }
+    .back-link-arrow {
+      font-family: 'Instrument Serif', serif;
+      font-size: 16px;
+      line-height: 1;
     }
 
     .review-stats {
@@ -365,13 +378,12 @@
 
     @media (max-width: 640px) {
       .screen { padding: 60px 24px; }
-      .screen.form-screen { padding-top: 64px; padding-bottom: 130px; }
+      .screen.form-screen { padding-top: 64px; padding-bottom: 80px; }
       .section-header { margin-bottom: 40px; }
       .block { margin-bottom: 40px; }
       .field { margin-bottom: 24px; }
-      .form-nav { padding: 12px 20px; gap: 10px; }
-      .form-nav .cta { padding: 14px 18px; font-size: 14px; flex: 1; justify-content: center; }
-      .form-nav .cta-secondary { flex: 0 0 auto; }
+      .form-nav { flex-direction: column; align-items: stretch; }
+      .form-nav .cta { width: 100%; justify-content: center; }
       .cta-row { margin-top: 36px; gap: 18px; }
       .meta { font-size: 12px; }
       .review-stats { gap: 28px; }
@@ -411,6 +423,7 @@
           <span class="section-number">01 / 14</span>
           <h2 class="section-title">About you<br /><em>and the venture</em></h2>
           <p class="section-intro">A bit of context before we get into the product itself.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
         </header>
 
         <div class="block">
@@ -479,7 +492,6 @@
         </div>
 
         <div class="form-nav">
-          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
           <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
         </div>
       </div>
@@ -492,6 +504,7 @@
           <span class="section-number">02 / 14</span>
           <h2 class="section-title">Vision<br /><em>and problem</em></h2>
           <p class="section-intro">Now the heart of it. What you're building, and why.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
         </header>
 
         <div class="block">
@@ -545,7 +558,6 @@
         </div>
 
         <div class="form-nav">
-          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
           <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
         </div>
       </div>
@@ -558,6 +570,7 @@
           <span class="section-number">03 / 14</span>
           <h2 class="section-title">Users<br /><em>and audience</em></h2>
           <p class="section-intro">Who you're building for, and how well you know them.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
         </header>
 
         <div class="block">
@@ -616,7 +629,6 @@
         </div>
 
         <div class="form-nav">
-          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
           <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
         </div>
       </div>
@@ -629,6 +641,7 @@
           <span class="section-number">04 / 14</span>
           <h2 class="section-title">The product<br /><em>in your head</em></h2>
           <p class="section-intro">What it is, how it works, and what it borrows from.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
         </header>
 
         <div class="block">
@@ -702,7 +715,6 @@
         </div>
 
         <div class="form-nav">
-          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
           <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
         </div>
       </div>
@@ -715,6 +727,7 @@
           <span class="section-number">05 / 14</span>
           <h2 class="section-title">Value<br /><em>and difference</em></h2>
           <p class="section-intro">What makes this worth building, and what makes it yours.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
         </header>
 
         <div class="block">
@@ -748,7 +761,6 @@
         </div>
 
         <div class="form-nav">
-          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
           <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
         </div>
       </div>
@@ -761,6 +773,7 @@
           <span class="section-number">06 / 14</span>
           <h2 class="section-title">Feature<br /><em>brain dump</em></h2>
           <p class="section-intro">Get everything out of your head. We'll prioritize in the next section.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
         </header>
 
         <div class="block">
@@ -782,7 +795,6 @@
         </div>
 
         <div class="form-nav">
-          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
           <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
         </div>
       </div>
@@ -795,6 +807,7 @@
           <span class="section-number">07 / 14</span>
           <h2 class="section-title">MVP<br /><em>and what waits</em></h2>
           <p class="section-intro">Now let's cut. What makes the first version, what comes next, what waits.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
         </header>
 
         <div class="block">
@@ -823,7 +836,6 @@
         </div>
 
         <div class="form-nav">
-          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
           <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
         </div>
       </div>
@@ -836,6 +848,7 @@
           <span class="section-number">08 / 14</span>
           <h2 class="section-title">Platforms<br /><em>and technology</em></h2>
           <p class="section-intro">Where it lives and how it connects to the rest of the world.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
         </header>
 
         <div class="block">
@@ -893,7 +906,6 @@
         </div>
 
         <div class="form-nav">
-          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
           <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
         </div>
       </div>
@@ -906,6 +918,7 @@
           <span class="section-number">09 / 14</span>
           <h2 class="section-title">Trust<br /><em>and safety</em></h2>
           <p class="section-intro">Who's in, who's out, and how you protect the people inside.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
         </header>
 
         <div class="block">
@@ -973,7 +986,6 @@
         </div>
 
         <div class="form-nav">
-          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
           <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
         </div>
       </div>
@@ -986,6 +998,7 @@
           <span class="section-number">10 / 14</span>
           <h2 class="section-title">Business<br /><em>and revenue</em></h2>
           <p class="section-intro">How the product creates value, and how that value comes back to you.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
         </header>
 
         <div class="block">
@@ -1040,7 +1053,6 @@
         </div>
 
         <div class="form-nav">
-          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
           <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
         </div>
       </div>
@@ -1053,6 +1065,7 @@
           <span class="section-number">11 / 14</span>
           <h2 class="section-title">After<br /><em>launch</em></h2>
           <p class="section-intro">Building it is one thing. Running it is another.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
         </header>
 
         <div class="block">
@@ -1092,7 +1105,6 @@
         </div>
 
         <div class="form-nav">
-          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
           <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
         </div>
       </div>
@@ -1105,6 +1117,7 @@
           <span class="section-number">12 / 14</span>
           <h2 class="section-title">Goals<br /><em>and risks</em></h2>
           <p class="section-intro">What success means, and what could go wrong.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
         </header>
 
         <div class="block">
@@ -1143,7 +1156,6 @@
         </div>
 
         <div class="form-nav">
-          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
           <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
         </div>
       </div>
@@ -1156,6 +1168,7 @@
           <span class="section-number">13 / 14</span>
           <h2 class="section-title">Constraints</h2>
           <p class="section-intro">The real-world edges. Time, money, anything else that shapes the project.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
         </header>
 
         <div class="block">
@@ -1206,7 +1219,6 @@
         </div>
 
         <div class="form-nav">
-          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
           <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
         </div>
       </div>
@@ -1219,6 +1231,7 @@
           <span class="section-number">14 / 14</span>
           <h2 class="section-title">Working<br /><em>together</em></h2>
           <p class="section-intro">How you want to collaborate, and what kind of help you're looking for.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
         </header>
 
         <div class="block">
@@ -1260,7 +1273,6 @@
         </div>
 
         <div class="form-nav">
-          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
           <button class="cta" data-action="next" type="button">Review your answers <span class="cta-arrow">&rarr;</span></button>
         </div>
       </div>
@@ -1273,6 +1285,7 @@
           <span class="section-number">Almost done</span>
           <h2 class="section-title">That's it.<br /><em>Thank you.</em></h2>
           <p class="section-intro">Download your answers as a markdown file and send it back to me. I'll read it carefully and come back to you with a recommended direction, scope, and proposal.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
         </header>
 
         <div class="review-stats">
@@ -1293,9 +1306,6 @@
           </button>
         </div>
 
-        <div class="form-nav">
-          <button class="cta cta-secondary" data-action="back" type="button"><span class="cta-arrow">&rarr;</span> Back</button>
-        </div>
       </div>
     </section>
   </main>

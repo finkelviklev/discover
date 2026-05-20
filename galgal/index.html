@@ -333,21 +333,26 @@
     .back-link {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      margin-top: 24px;
-      padding: 6px 0;
-      font-size: 14px;
+      gap: 8px;
+      margin-top: 28px;
+      padding: 12px 24px;
+      font-size: 15px;
       font-family: 'Inter', sans-serif;
-      color: var(--ink-soft);
-      background: none;
-      border: none;
+      font-weight: 400;
+      color: var(--ink);
+      background: transparent;
+      border: 1px solid var(--rule);
+      border-radius: 999px;
       cursor: pointer;
       letter-spacing: 0.01em;
-      transition: color 0.15s ease;
+      transition: all 0.15s ease;
+      user-select: none;
     }
-    .back-link:hover { color: var(--ink); }
+    .back-link:hover {
+      border-color: var(--ink);
+    }
     .back-link-arrow {
-      font-family: 'Instrument Serif', serif;
+      font-family: 'Inter', sans-serif;
       font-size: 16px;
       line-height: 1;
     }

@@ -396,6 +396,69 @@
       color: var(--ink);
       margin-bottom: 14px;
     }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(245, 243, 238, 0.96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.55s ease;
+      padding: 40px 24px;
+    }
+    .overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .overlay-card {
+      max-width: 560px;
+      text-align: center;
+      transform: translateY(24px);
+      opacity: 0;
+      transition: transform 0.7s cubic-bezier(0.2, 0, 0, 1), opacity 0.7s ease;
+      transition-delay: 0.15s;
+    }
+    .overlay.visible .overlay-card {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .overlay-title {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: clamp(52px, 8vw, 84px);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      margin-bottom: 36px;
+    }
+    .overlay-title em {
+      font-style: italic;
+    }
+    .overlay-body {
+      font-size: clamp(17px, 1.5vw, 19px);
+      line-height: 1.6;
+      color: var(--ink);
+      max-width: 480px;
+      margin: 0 auto 18px;
+    }
+    .overlay-body strong {
+      font-weight: 500;
+    }
+    .overlay-meta {
+      font-size: 13px;
+      color: var(--ink-faint);
+      letter-spacing: 0.06em;
+      margin-top: 36px;
+      text-transform: uppercase;
+    }
+    body.overlay-open {
+      overflow: hidden;
+    }
     .stat {
       display: flex;
       flex-direction: column;
@@ -1344,11 +1407,6 @@
           </button>
         </div>
 
-        <div class="review-success" id="review-success" hidden>
-          <h3 class="review-success-title">Thank you.</h3>
-          <p class="review-success-body">Your answers have been sent. You'll receive a copy at <strong id="review-success-email"></strong>. I'll read everything carefully and come back to you soon.</p>
-        </div>
-
         <div class="review-error" id="review-error" hidden>
           <p>Something went wrong sending your answers. Please try again, or use the download below as a backup.</p>
           <button class="cta cta-secondary" id="download-fallback-btn" type="button">Download as backup <span class="cta-arrow">&darr;</span></button>
@@ -1357,6 +1415,15 @@
       </div>
     </section>
   </main>
+
+  <div class="overlay" id="success-overlay" aria-hidden="true">
+    <div class="overlay-card">
+      <h2 class="overlay-title">Thank you,<br /><em>that's everything.</em></h2>
+      <p class="overlay-body">Your answers are with Vika. She'll go through them carefully and come back to you with a recommended direction and a tailored proposal.</p>
+      <p class="overlay-body">A copy has been sent to <strong id="overlay-email">your email</strong> for your records.</p>
+      <p class="overlay-meta">You can close this tab</p>
+    </div>
+  </div>
 
   <script>
     const STORAGE_KEY = 'galgal_discovery_v2';
@@ -1632,10 +1699,12 @@
         var data = await response.json();
         if (data && data.success === false) throw new Error('FormSubmit returned not ok');
 
-        document.getElementById('review-form').hidden = true;
-        var successEmail = document.getElementById('review-success-email');
-        if (successEmail) successEmail.textContent = alanaEmail || 'the email you provided';
-        document.getElementById('review-success').hidden = false;
+        var overlayEmail = document.getElementById('overlay-email');
+        if (overlayEmail) overlayEmail.textContent = alanaEmail || 'the email you provided';
+        var overlay = document.getElementById('success-overlay');
+        overlay.classList.add('visible');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('overlay-open');
       } catch (e) {
         console.error(e);
         btn.disabled = false;
